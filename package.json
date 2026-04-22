@@ -1,0 +1,14 @@
+{
+  "name": "oneway-interview",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:admin\" \"npm run dev:candidate\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:admin": "cd admin-app && npm run dev",
+    "dev:candidate": "cd candidate-app && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
