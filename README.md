@@ -69,12 +69,7 @@ cd candidate-app && npm install && cd ..
 
 ### 3. Configure environment
 
-```bash
-# Copy the example env file
-cp server/.env.example server/.env
-```
-
-Default `.env` values work out of the box for local development:
+The `.env` file lives at the **project root** and is shared by all services. Default values work out of the box for local development:
 
 ```env
 PORT=5001
