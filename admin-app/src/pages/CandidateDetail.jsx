@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api';
+import { buildInterviewUrl } from '../utils';
 import { ArrowLeft, RefreshCw, RotateCcw, CheckCircle, Play, X, Copy, ExternalLink } from 'lucide-react';
 
 const STATUS_LABELS = {
@@ -44,7 +45,7 @@ export default function CandidateDetail() {
   async function handleResend() {
     try {
       const result = await api.resendLink(id);
-      const link = `${window.location.protocol}//${window.location.hostname}:3002/interview/${result.token}`;
+      const link = buildInterviewUrl(result.token);
       setGeneratedLink(link);
       loadCandidate();
     } catch (err) {
@@ -55,7 +56,7 @@ export default function CandidateDetail() {
   async function handleResubmit() {
     try {
       const result = await api.requestResubmit(id, resubmitMsg);
-      const link = `${window.location.protocol}//${window.location.hostname}:3002/interview/${result.token}`;
+      const link = buildInterviewUrl(result.token);
       setGeneratedLink(link);
       setShowResubmit(false);
       setResubmitMsg('');
@@ -214,11 +215,11 @@ export default function CandidateDetail() {
                     <div className="flex items-center gap-1">
                       <span className="font-mono text-xs text-gray-500">...{l.token.slice(-8)}</span>
                       <button
-                        onClick={() => navigator.clipboard.writeText(`${window.location.protocol}//${window.location.hostname}:3002/interview/${l.token}`)}
+                        onClick={() => navigator.clipboard.writeText(buildInterviewUrl(l.token))}
                         className="p-1 text-gray-400 hover:text-blue-600" title="Copy link"
                       ><Copy size={12} /></button>
                       <a
-                        href={`${window.location.protocol}//${window.location.hostname}:3002/interview/${l.token}`}
+                        href={buildInterviewUrl(l.token)}
                         target="_blank" rel="noopener noreferrer"
                         className="p-1 text-gray-400 hover:text-blue-600" title="Open link"
                       ><ExternalLink size={12} /></a>

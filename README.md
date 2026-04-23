@@ -9,6 +9,8 @@ OneWayInterview/
 ├── server/           # Express API (port 5001)
 ├── admin-app/        # Admin portal - React + Vite (port 3001)
 ├── candidate-app/    # Candidate portal - React + Vite (port 3002)
+├── deploy/           # EC2 manual deployment (Nginx, PM2, setup script)
+├── terraform/        # One-command AWS deployment via Terraform
 └── package.json      # Root scripts (concurrently)
 ```
 
@@ -161,9 +163,53 @@ cd candidate-app && npx vite --port 3002
 - **Videos:** Local filesystem at `server/uploads/videos/{candidateId}/`
 - **Emails:** Logged to server console
 
+## AWS Deployment
+
+Two deployment options are available for production on AWS EC2:
+
+### Option A — Terraform (recommended, zero-touch)
+
+```bash
+cd terraform/
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars — set key_pair_name at minimum
+
+terraform init
+terraform apply   # ~5 minutes, fully automated
+```
+
+This creates an EC2 instance (Ubuntu 24.04), installs everything, builds both apps,
+configures Nginx with self-signed SSL, and starts the API server via PM2.
+See [`terraform/README.md`](terraform/README.md) for full details.
+
+Tear down with `terraform destroy`.
+
+### Option B — Manual EC2 Setup
+
+```bash
+# SSH into an Ubuntu 24.04 EC2 instance, then:
+git clone https://github.com/tjblavakumar/OneWayInterview.git
+cd OneWayInterview
+chmod +x deploy/setup.sh
+sudo bash deploy/setup.sh
+```
+
+See [`deploy/EC2-SETUP-GUIDE.md`](deploy/EC2-SETUP-GUIDE.md) for step-by-step instructions.
+
+### Production URLs
+
+| URL | Service |
+|-----|--------|
+| `https://<EC2-IP>/` | Admin Portal |
+| `https://<EC2-IP>/candidate/` | Candidate Portal |
+| `https://<EC2-IP>/api/health` | API Health Check |
+
+> **Note:** Accept the self-signed certificate warning in your browser.
+> Camera access requires HTTPS, which is why SSL is configured.
+
 ## Future Enhancements
 
-- AWS EC2 deployment with S3 video storage and SES email
+- S3 video storage and SES email integration
 - Admin authentication
 - Candidate email notifications via SMTP/SES
 - Video transcription and AI-assisted evaluation

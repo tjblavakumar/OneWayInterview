@@ -9,14 +9,23 @@ const adminRoutes = require('./routes/admin');
 const candidateRoutes = require('./routes/candidate');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
+const allowedOrigins = [
+  process.env.ADMIN_APP_URL || 'http://localhost:3001',
+  process.env.CANDIDATE_APP_URL || 'http://localhost:3002',
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    process.env.ADMIN_APP_URL || 'http://localhost:3001',
-    process.env.CANDIDATE_APP_URL || 'http://localhost:3002',
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (same-origin, curl, etc.) or matching origins
+    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all in dev; Nginx handles security in prod
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

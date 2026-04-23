@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
+import { buildInterviewUrl } from '../utils';
 import { Plus, Send, RefreshCw, Eye, X } from 'lucide-react';
 
 const STATUS_LABELS = {
@@ -55,7 +56,7 @@ export default function Candidates() {
     try {
       setError('');
       const result = await api.createCandidate(form);
-      const link = `${window.location.protocol}//${window.location.hostname}:3002/interview/${result.token}`;
+      const link = buildInterviewUrl(result.token);
       setGeneratedLink(link);
       setForm({ name: '', email: '', position_id: '', expiry_date: '' });
       setShowForm(false);
@@ -68,7 +69,7 @@ export default function Candidates() {
   async function handleResend(id) {
     try {
       const result = await api.resendLink(id);
-      const link = `${window.location.protocol}//${window.location.hostname}:3002/interview/${result.token}`;
+      const link = buildInterviewUrl(result.token);
       setGeneratedLink(link);
       loadData();
     } catch (err) {
